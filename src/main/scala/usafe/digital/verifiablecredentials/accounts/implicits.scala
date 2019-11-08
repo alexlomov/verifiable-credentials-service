@@ -13,12 +13,20 @@ object implicits {
   implicit val nameDecoder: Decoder[Name] = Decoder.decodeString.map(Name)
   implicit val addressDecoder: Decoder[Address] = Decoder.decodeString.map(Address)
   implicit val ageDecoder: Decoder[Age] = Decoder.decodeInt.map(Age)
+  implicit val phoneNumberDecoder: Decoder[PhoneNumber] = Decoder.decodeString.map(PhoneNumber)
+  implicit val userAccountDecoder: Decoder[UserAccount] = Decoder.instance { c =>
+    for {
+      id <- c.downField("accountId").as[AccountId]
+      email <- c.downField("email").as[Email]
+      name <- c.downField("name").as[Name]
+      address <- c.downField("address").as[Address]
+      age <- c.downField("age").as[Age]
+      phoneNumber <- c.downField("phoneNumber").as[PhoneNumber]
+    } yield UserAccount(id, email, name, address, age, phoneNumber)
+  }
 
-  implicit def accountIdEntityDecoder[F[_]: Sync]: EntityDecoder[F, AccountId] = jsonOf
-  implicit def emailEntityDecoder[F[_]: Sync]: EntityDecoder[F, Email] = jsonOf
-  implicit def nameEntityDecoder[F[_]: Sync]: EntityDecoder[F, Name] = jsonOf
-  implicit def addressEntityDecoder[F[_]: Sync]: EntityDecoder[F, Address] = jsonOf
-  implicit def ageEntityDecoder[F[_]: Sync]: EntityDecoder[F, Age] = jsonOf
+
+  implicit def userAccountEntityDecoder[F[_]: Sync]: EntityDecoder[F, UserAccount] = jsonOf
 
 
 
