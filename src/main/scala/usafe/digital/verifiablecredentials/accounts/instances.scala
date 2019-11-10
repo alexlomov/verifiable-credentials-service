@@ -12,10 +12,12 @@ object instances {
 
     import usafe.digital.verifiablecredentials.accounts.implicits.userAccountEntityDecoder
 
-    implicit def demoAccountClient[F[_]: Sync](accountId: AccountId): Kleisli[F, (Client[F], Uri), UserAccount] =
-      Kleisli { case (client, uri) =>
-        client.expect[UserAccount](uri / "accounts" / accountId.id)
-      }
+    implicit def demoAccountClient[F[_]: Sync]: AccountsClient[F, (Client[F], Uri), UserAccount] =
+      new AccountsClient[F, (Client[F], Uri), UserAccount] {
+        override def getAccount(accountId: AccountId): Kleisli[F, (Client[F], Uri), UserAccount] = Kleisli { case (client, uri) =>
+          client.expect[UserAccount](uri / "accounts" / accountId.id)
+        }
+    }
 
   }
 

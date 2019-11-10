@@ -29,6 +29,8 @@ object ops {
       ApplicativeError[F, Throwable].catchNonFatal(
         Base64.getDecoder.decode(bytes)
       )
+    def publicKeySpec: X509EncodedKeySpec = new X509EncodedKeySpec(bytes)
+    def privateKeySpec: PKCS8EncodedKeySpec = new PKCS8EncodedKeySpec(bytes)
   }
   implicit def asBytesOps(bytes: Array[Byte]): ByteArrayOps = new ByteArrayOps(bytes)
 
