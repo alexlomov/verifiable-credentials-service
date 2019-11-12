@@ -12,13 +12,13 @@ import scala.util.control.NoStackTrace
 
 object types {
 
-  sealed trait Credential extends Product with Serializable
+  sealed trait Claim extends Product with Serializable
 
-  object Credential {
-    case object NameCredential extends Credential
-    case object AddressCredential extends Credential
-    case object PhoneNumberCredential extends Credential
-    case object EmailCredential extends Credential
+  object Claim {
+    case object NameClaim extends Claim
+    case object AddressClaim extends Claim
+    case object PhoneNumberClaim extends Claim
+    case object EmailClaim extends Claim
   }
 
   final case class VerifiableCredentialsRequest(
@@ -31,7 +31,7 @@ object types {
     requestedParameters: RequestedParameters
   )
 
-  final case class RequestedParameters(params: NonEmptyList[Credential])
+  final case class RequestedParameters(params: NonEmptyList[Claim])
 
 
   final case class VerifiableCredentials(
@@ -41,10 +41,15 @@ object types {
     credentialSubject: ResponseCredentialSubject,
     issuer: CredentialsIssuer,
     issuanceDate: IssuanceDate,
-    expirationDate: Option[ExpirationDate]
+    expirationDate: Option[ExpirationDate],
+    proof: Option[Proof]
   )
 
   final case class VerifiableCredentialsId(id: String)
+  object VerifiableCredentialsId {
+    private val r = new scala.util.Random(42)
+    def newId: VerifiableCredentialsId = VerifiableCredentialsId(r.alphanumeric.take(10).mkString)
+  }
 
   sealed trait VerifiableCredentialType extends Product with Serializable
 
@@ -55,14 +60,14 @@ object types {
 
 
   //TODO: Cutting the edge, value has to be polymorphic
-  final case class VerifiableCredential(
-    name: Credential,
+  final case class VerifiableClaim(
+    name: Claim,
     value: String
   )
 
   final case class ResponseCredentialSubject(
     id: Option[Did],
-    credentials: List[VerifiableCredential]
+    claims: List[VerifiableClaim]
   )
 
   final case class CredentialsIssuer(

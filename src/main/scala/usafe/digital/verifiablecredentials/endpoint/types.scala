@@ -10,4 +10,9 @@ object types {
 
   final case class DuplicateKeys(creator: Did, quantity: Int) extends NoStackTrace
 
+  final case class CoreError(
+    errorCode: Int,
+    errorDescription: String
+  )
+
 }
