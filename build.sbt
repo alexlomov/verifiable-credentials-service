@@ -55,7 +55,7 @@ enablePlugins(JavaAppPackaging)
 enablePlugins(DockerPlugin)
 
 dockerBaseImage := "openjdk:8u212-jre-alpine"
-packageName in Docker := "git.usafe.digital:4567/usafe/did-registry"
+packageName in Docker := "git.usafe.digital:4567/usafe/verifiable-credentials-service"
 
 dockerCommands ++= Seq(
   Cmd("USER", "root"),
