@@ -11,7 +11,7 @@ val catsEffectVersion = "2.0.0"
 val catsMtlVersion = "0.7.0"
 val circeVersion = "0.12.0"
 val http4sVersion = "0.21.0-M5"
-val pureConfigVersion = "0.12.0"
+val pureConfigVersion = "0.12.1"
 val fs2Version = "2.0.0"
 val izumiVersion = "0.9.4"
 
@@ -28,6 +28,7 @@ libraryDependencies ++= Seq(
   "org.http4s"    %% "http4s-dsl" % http4sVersion,
   "org.http4s" %% "http4s-prometheus-metrics" % http4sVersion,
   "com.github.pureconfig" %% "pureconfig" % pureConfigVersion,
+  "com.github.pureconfig" %% "pureconfig-cats-effect" % pureConfigVersion,
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
@@ -37,6 +38,10 @@ libraryDependencies ++= Seq(
   "org.parboiled" %% "parboiled" % "2.1.8",
 
   "org.bouncycastle" % "bcpkix-jdk15on" % "1.64",
+
+  "io.7mind.izumi" %% "logstage-core" % izumiVersion,
+  "io.7mind.izumi" %% "logstage-rendering-circe" % izumiVersion,
+  "io.7mind.izumi" %% "logstage-adapter-slf4j" % izumiVersion,
 
   "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
   "io.circe" %% "circe-literal" % circeVersion % Test,

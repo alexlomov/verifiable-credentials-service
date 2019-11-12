@@ -16,6 +16,4 @@ object types {
     credentialsProviderHost: Uri,
     didRegistryHost: Uri
   )
-
-
 }
