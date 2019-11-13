@@ -1,7 +1,5 @@
 package usafe.digital.proof
 
-import java.io.{DataInputStream, File, FileInputStream}
-import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 import java.util.Base64
@@ -39,7 +37,7 @@ object ops {
   def sanitizeProof(proof: Proof): SanitizedProof = SanitizedProof(proof.creator, proof.created)
 
   def canonicalJsonObject(jobj: JsonObject): JsonObject =
-    JsonObject.fromIterable(jobj.toVector.sortBy(_._1).map { case (k,j) => k -> canonicalJson(j) })
+    JsonObject.fromIterable(jobj.toVector.sortBy(_._1).map { case (k, j) => k -> canonicalJson(j) })
 
   def canonicalJson(j: Json): Json = j.fold[Json](
     jsonNull = Json.Null,
@@ -127,35 +125,5 @@ object ops {
     )
     v <- cry.verify(publicKey, ph ++ jh, sig)
   } yield v
-
-  def loadKeys[F[_]: MonadError[*[_], Throwable]]: F[(PKCS8EncodedKeySpec, X509EncodedKeySpec)] = for {
-    priv <- getKeyBytes("key")
-    pub <- getKeyBytes("key.pub")
-    privK = priv.privateKeySpec
-    pubK = pub.publicKeySpec
-  } yield(privK, pubK)
-
-  private def loadResource[F[_]: MonadError[*[_], Throwable]](name: String): F[URL] = {
-    val r = getClass.getClassLoader.getResource(name)
-    if (r == null)
-      MonadError[F, Throwable].raiseError(new RuntimeException(s"Not available: $name"))
-    else
-      MonadError[F, Throwable].pure(r)
-  }
-
-  private def bytesFromResource[F[_]: MonadError[*[_], Throwable]](url: URL): F[Array[Byte]] =
-    MonadError[F, Throwable].catchNonFatal {
-      val f = new File(url.toURI)
-      val bytes = new Array[Byte](f.length().asInstanceOf[Int])
-      new DataInputStream(new FileInputStream(f)).readFully(bytes)
-      bytes
-    }
-
-  private def getKeyBytes[F[_]: MonadError[*[_], Throwable]](keyName: String): F[Array[Byte]] = for {
-    u <- loadResource(keyName)
-    bs <- bytesFromResource(u)
-    str = new String(bs).replaceAll("-----((BEGIN)|(END))[A-Z\\s]+-----", "").replace("\n", "")
-    base64Bs <- str.base64Bytes
-  } yield base64Bs
 
 }
