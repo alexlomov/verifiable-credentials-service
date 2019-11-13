@@ -60,7 +60,7 @@ object main extends IOApp {
 
 
   private def httpProgram[F[_]: Sync](client: Client[F], cfg: AppConfig): F[HttpRoutes[F]] = for {
-    ks <- usafe.digital.proof.ops.loadKeys[F]
+    ks <- ops.loadKeys[F]
     (priv, _) = ks
     http = endpoint.http.postVerifiableCredentialsRequest(cfg, priv, client)
   } yield http
