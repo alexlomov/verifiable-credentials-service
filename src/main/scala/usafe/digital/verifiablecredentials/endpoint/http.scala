@@ -46,7 +46,7 @@ object http {
 
         for {
           vcsDid <- Sync[F].fromEither(
-            Did.fromString("did:corporation:vcs")
+            Did.fromString("did:usafe:verifiable-credential-service")
           )
           vcr <- post.as[VerifiableCredentialsRequest]
           creKey <- program.getCreatorPublicKey(vcr.proof.creator).run((client, cfg.didRegistryHost))

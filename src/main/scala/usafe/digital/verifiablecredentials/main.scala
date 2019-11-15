@@ -53,7 +53,7 @@ object main extends IOApp {
       Router(
         "/" -> loggedRoutes
       ).orNotFound
-    ).bindHttp(cfg.httpPort.value)
+    ).bindHttp(cfg.httpPort.value, "0.0.0.0")
         .serve
 
   } yield server
