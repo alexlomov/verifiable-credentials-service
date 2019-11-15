@@ -31,8 +31,14 @@ object ops {
 
   private def getKeyBytes[F[_]: Sync](keyName: String): F[Array[Byte]] = for {
     bs <- loadResource(keyName)
-    str = new String(bs).replaceAll("-----((BEGIN)|(END))[A-Z\\s]+-----", "").replace("\n", "")
-    base64Bs <- str.base64Bytes
+    base64Bs <- sanitizePemBytes(bs)
   } yield base64Bs
+
+  def sanitizePemBytes[F[_]: Sync](pemKey: Array[Byte]): F[Array[Byte]] =
+    sanitizePemString(new String(pemKey)).base64Bytes
+
+
+  def sanitizePemString(pemKey: String): String =
+    pemKey.replaceAll("-----((BEGIN)|(END))[A-Z\\s]+-----", "").replace("\n", "")
 
 }

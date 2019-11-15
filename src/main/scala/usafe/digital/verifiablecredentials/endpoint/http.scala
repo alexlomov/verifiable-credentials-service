@@ -50,7 +50,9 @@ object http {
           )
           vcr <- post.as[VerifiableCredentialsRequest]
           creKey <- program.getCreatorPublicKey(vcr.proof.creator).run((client, cfg.didRegistryHost))
-          creKeyBytes <- creKey.publicKeyValue.value.base64Bytes // Typeclasses against the public key encoding must rock here
+          creKeyBytes <- usafe.digital.verifiablecredentials.ops.sanitizePemString(
+            creKey.publicKeyValue.value
+          ).base64Bytes // Typeclasses against the public key encoding must rock here
           creKeyX509 = creKeyBytes.publicKeySpec
           isValid <- proof.verifyProof(vcr, creKeyX509)
           _ <- if (isValid) {
