@@ -23,8 +23,9 @@ object implicits {
   implicit val showCredential: Show[Claim] = Show.show {
     case NameClaim => "name"
     case AddressClaim => "address"
-    case PhoneNumberClaim => "phoneNumber"
+    case PhoneClaim => "phone"
     case EmailClaim => "email"
+    case AgeClaim => "age"
   }
 
   implicit val encodeAccountId: Encoder[AccountId] = Encoder.encodeString.contramap { _.id }
@@ -53,8 +54,9 @@ object implicits {
   implicit val decodeClaim: Decoder[Claim] = Decoder.decodeString.emap {
     case "name" => NameClaim.asRight
     case "address" => AddressClaim.asRight
-    case "phoneNumber" => PhoneNumberClaim.asRight
+    case "phone" => PhoneClaim.asRight
     case "email" => EmailClaim.asRight
+    case "age" => AgeClaim.asRight
     case x => s"Unsupported credential $x".asLeft
   }
 
@@ -149,10 +151,11 @@ object implicits {
   implicit val decodeResponseCredentialSubject: Decoder[ResponseCredentialSubject] = Decoder.instance { c =>
     val claims = for {
       email <- c.downField("email").as[Option[String]].map(_.map(EmailClaim -> _))
-      phone <- c.downField("phoneNumber").as[Option[String]].map(_.map(PhoneNumberClaim -> _))
+      phone <- c.downField("phone").as[Option[String]].map(_.map(PhoneClaim -> _))
       name <- c.downField("name").as[Option[String]].map(_.map(NameClaim -> _))
       address <- c.downField("address").as[Option[String]].map(_.map(AddressClaim -> _))
-    } yield List(email, phone, name, address)
+      age <- c.downField("age").as[Option[String]].map(_.map(AgeClaim -> _))
+    } yield List(email, phone, name, address, age)
 
     val mClaims = claims.map {
       _.flatten.map {  case (c, v) => VerifiableClaim(c, v) }

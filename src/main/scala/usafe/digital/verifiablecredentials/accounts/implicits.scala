@@ -13,7 +13,7 @@ object implicits {
   implicit val nameDecoder: Decoder[Name] = Decoder.decodeString.map(Name)
   implicit val addressDecoder: Decoder[Address] = Decoder.decodeString.map(Address)
   implicit val ageDecoder: Decoder[Age] = Decoder.decodeInt.map(Age)
-  implicit val phoneNumberDecoder: Decoder[PhoneNumber] = Decoder.decodeString.map(PhoneNumber)
+  implicit val phoneDecoder: Decoder[Phone] = Decoder.decodeString.map(Phone)
   implicit val userAccountDecoder: Decoder[UserAccount] = Decoder.instance { c =>
     for {
       id <- c.downField("accountId").as[AccountId]
@@ -21,7 +21,7 @@ object implicits {
       name <- c.downField("name").as[Name]
       address <- c.downField("address").as[Address]
       age <- c.downField("age").as[Age]
-      phoneNumber <- c.downField("phoneNumber").as[PhoneNumber]
+      phoneNumber <- c.downField("phone").as[Phone]
     } yield UserAccount(id, email, name, address, age, phoneNumber)
   }
 

@@ -12,13 +12,13 @@ object types {
 
   case object RsaSignature2018 extends ProofSuiteType
 
-  final case class ProofValue(value: String)
+  final case class SignatureValue(value: String)
 
   final case class Proof(
     `type`: ProofSuiteType,
     creator: Did,
     created: ZonedDateTime,
-    proofValue: ProofValue
+    signatureValue: SignatureValue
   )
 
   final case class SanitizedProof(

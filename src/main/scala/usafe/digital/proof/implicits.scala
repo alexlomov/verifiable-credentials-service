@@ -5,7 +5,7 @@ import java.time.ZonedDateTime
 import cats.syntax.either._
 import io.circe.{Decoder, DecodingFailure, Encoder, JsonObject}
 import io.circe.syntax._
-import usafe.digital.proof.types.{Proof, ProofSuiteType, ProofValue, RsaSignature2018, SanitizedProof}
+import usafe.digital.proof.types.{Proof, ProofSuiteType, SignatureValue, RsaSignature2018, SanitizedProof}
 import usafe.digital.did.implicits.didEncoder
 import usafe.digital.did.types.Did
 
@@ -24,16 +24,16 @@ object implicits {
     }
   }
 
-  implicit val encodeProofValue: Encoder[ProofValue] = Encoder.encodeString.contramap { _.value }
+  implicit val encodeProofValue: Encoder[SignatureValue] = Encoder.encodeString.contramap { _.value }
 
-  implicit val decodeProofValue: Decoder[ProofValue] = Decoder.instance { _.as[String].map(ProofValue) }
+  implicit val decodeProofValue: Decoder[SignatureValue] = Decoder.instance { _.as[String].map(SignatureValue) }
 
   implicit val encodeProof: Encoder[Proof] = Encoder.encodeJsonObject.contramapObject { p =>
     JsonObject(
       "type" := p.`type`,
       "creator" := p.creator,
       "created" := p.created,
-      "signatureValue" := p.proofValue
+      "signatureValue" := p.signatureValue
     )
   }
 
@@ -49,7 +49,7 @@ object implicits {
       tp <- c.downField("type").as[ProofSuiteType]
       creator <- c.downField("creator").as[Did]
       created <- c.downField("created").as[ZonedDateTime]
-      sigVal <- c.downField("signatureValue").as[ProofValue]
+      sigVal <- c.downField("signatureValue").as[SignatureValue]
     } yield Proof(tp, creator, created, sigVal)
   }
 

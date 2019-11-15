@@ -17,8 +17,9 @@ object types {
   object Claim {
     case object NameClaim extends Claim
     case object AddressClaim extends Claim
-    case object PhoneNumberClaim extends Claim
+    case object PhoneClaim extends Claim
     case object EmailClaim extends Claim
+    case object AgeClaim extends Claim
   }
 
   final case class VerifiableCredentialsRequest(

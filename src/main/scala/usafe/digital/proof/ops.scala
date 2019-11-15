@@ -8,7 +8,7 @@ import cats.{ApplicativeError, MonadError}
 import cats.syntax.all._
 import io.circe.syntax._
 import io.circe._
-import usafe.digital.proof.types.{Proof, ProofValue, RsaSignature2018, SanitizedProof}
+import usafe.digital.proof.types.{Proof, SignatureValue, RsaSignature2018, SanitizedProof}
 
 object ops {
   
@@ -61,7 +61,7 @@ object ops {
     privateKey: PKCS8EncodedKeySpec
   ) (
     implicit proofEncoder: Encoder[SanitizedProof]
-  ): F[ProofValue] = {
+  ): F[SignatureValue] = {
     val cry = Sha256WithRsaPss[F]
     for {
       docHash <- cry.hash(
@@ -72,7 +72,7 @@ object ops {
       )
       signature <- cry.sign(privateKey, proofHash ++ docHash)
       enc = signature.base64String
-    } yield ProofValue(enc)
+    } yield SignatureValue(enc)
 
   }
 
@@ -116,7 +116,7 @@ object ops {
     proof <- getProof(j)
     sj = sanitizeJson(j)
     cry = Sha256WithRsaPss[F]
-    sig <- proof.proofValue.value.base64Bytes
+    sig <- proof.signatureValue.value.base64Bytes
     jh <- cry.hash(sj.noSpaces.utf8Bytes)
     ph <- cry.hash(
       canonicalJson(

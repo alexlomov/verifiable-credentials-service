@@ -77,7 +77,8 @@ object http {
                 VerifiableClaim(EmailClaim, acc.email.value),
                 VerifiableClaim(NameClaim, acc.name.value),
                 VerifiableClaim(AddressClaim, acc.address.value),
-                VerifiableClaim(PhoneNumberClaim, acc.phoneNumber.value)
+                VerifiableClaim(PhoneClaim, acc.phone.value),
+                VerifiableClaim(AgeClaim, acc.age.value.toString)
               )
             ),
             issuer = CredentialsIssuer(vcsDid, "Evilware"),

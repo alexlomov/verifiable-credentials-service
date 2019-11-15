@@ -32,7 +32,8 @@ class CryptoSuite extends FunSpecLike with Matchers {
             VerifiableClaim(Claim.NameClaim, "John Doe"),
             VerifiableClaim(Claim.EmailClaim, "john@doe.digital"),
             VerifiableClaim(Claim.AddressClaim, "Hollywood 90210"),
-            VerifiableClaim(Claim.PhoneNumberClaim, "223-322")
+            VerifiableClaim(Claim.PhoneClaim, "223-322"),
+            VerifiableClaim(Claim.AgeClaim, "100")
           )
         ),
         issuer = CredentialsIssuer(
