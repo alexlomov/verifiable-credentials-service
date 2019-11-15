@@ -44,7 +44,7 @@ object http {
       case post @ POST -> Root / "verifiable-credentials"
         if post.contentType.fold(false) { _.mediaType == MediaType.application.json } =>
 
-        for {
+        val exec = for {
           vcsDid <- Sync[F].fromEither(
             Did.fromString("did:usafe:verifiable-credential-service")
           )
@@ -94,6 +94,13 @@ object http {
           )
           resp <- Created(vcProven)
         } yield resp
+
+        exec.attempt >>= {
+          case Right(r) => r.pure
+          case Left(e) => BadGateway(
+            CoreError(502, e.getMessage)
+          )
+        }
 
     }
   }
