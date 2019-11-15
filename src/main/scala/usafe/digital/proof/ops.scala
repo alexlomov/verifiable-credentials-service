@@ -46,7 +46,7 @@ object ops {
     jsonString = (x: String) => Json.fromString(x),
     jsonArray = (x: Vector[Json]) => Json.fromValues(x.map(canonicalJson)),
     jsonObject = (x: JsonObject) => Json.fromJsonObject(canonicalJsonObject(x))
-  )
+  ).dropNullValues
 
   def sanitizeJson(json: Json): Json =
     json.hcursor.downField("proof").delete.as[Json].fold(
