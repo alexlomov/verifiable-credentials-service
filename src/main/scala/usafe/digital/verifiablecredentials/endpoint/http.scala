@@ -6,6 +6,9 @@ import java.time.ZonedDateTime
 import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.syntax.all._
+import izumi.logstage.api.{IzLogger, Log}
+import izumi.logstage.sink.ConsoleSink
+import logstage.LogIO
 import org.http4s.client.Client
 import org.http4s.{HttpRoutes, MediaType}
 import org.http4s.implicits._
@@ -13,7 +16,7 @@ import org.http4s.dsl.Http4sDsl
 import usafe.digital.did.types.{Did, Fragment}
 import usafe.digital.proof.types.SanitizedProof
 import usafe.digital.verifiablecredentials.config.types.AppConfig
-import usafe.digital.verifiablecredentials.endpoint.types.CoreError
+import usafe.digital.verifiablecredentials.endpoint.types.{CoreError, InvalidSignature}
 import usafe.digital.verifiablecredentials.types._
 import usafe.digital.verifiablecredentials.types.Claim._
 
@@ -40,6 +43,8 @@ object http {
     }
     import usafe.digital.proof.implicits.{ decodeProof, encodeSanitizedProof, encodeProof }
 
+    val logger = LogIO.fromLogger[F](IzLogger(Log.Level.Info, ConsoleSink.text(true)))
+
     HttpRoutes.of {
       case post @ POST -> Root / "verifiable-credentials"
         if post.contentType.fold(false) { _.mediaType == MediaType.application.json } =>
@@ -49,22 +54,25 @@ object http {
             Did.fromString("did:usafe:verifiable-credential-service")
           )
           vcr <- post.as[VerifiableCredentialsRequest]
+          _ <- logger.info(s"${ s"Querying for a key ${vcr.proof.creator}" -> "message" }")
           creKey <- program.getCreatorPublicKey(vcr.proof.creator).run((client, cfg.didRegistryHost))
+          _ <- logger.info(s"${ s"Received a key ${creKey.id}" -> "message" }")
           creKeyBytes <- usafe.digital.verifiablecredentials.ops.sanitizePemString(
             creKey.publicKeyValue.value
           ).base64Bytes // Typeclasses against the public key encoding must rock here
           creKeyX509 = creKeyBytes.publicKeySpec
+          _ <- logger.info(s"${ s"Ready to verify credential request" -> "message" }")
           isValid <- proof.verifyProof(vcr, creKeyX509)
           _ <- if (isValid) {
-            Sync[F].unit
+            Sync[F].unit <* logger.info(s"${ s"Credential request is valid" -> "message" }")
           } else {
-            Forbidden(CoreError(403, "Wrong proof"))
+            Sync[F].raiseError[Unit](InvalidSignature("Wrong proof")) <* logger.info(s"${ s"Credential request is INVALID" -> "message" }")
           }
           acc <- program.getAccountCredentials(vcr.credentialSubject.accountId)
             .run((client, cfg.credentialsProviderHost))
 
           accDid <- Sync[F].fromEither(
-            Did.fromString(s"did:corporation:${vcr.credentialSubject.accountId}")
+            Did.fromString(s"did:corporation:${vcr.credentialSubject.accountId.id}")
           )
 
           vc = VerifiableCredentials(
@@ -97,8 +105,12 @@ object http {
 
         exec.attempt >>= {
           case Right(r) => r.pure
+          case Left(f: InvalidSignature) =>
+            BadRequest(
+              CoreError(403, f.message)
+            )
           case Left(e) => BadGateway(
-            CoreError(502, e.getMessage)
+            CoreError(502, e.toString)
           )
         }
 

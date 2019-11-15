@@ -14,7 +14,7 @@ object registryClient {
   def getDocumentByKeyId[F[_] : Sync](pkId: Did)
     (implicit didDocumentEntityDecoder: EntityDecoder[F, List[DidDocument]]): Kleisli[F, (Client[F], Uri), List[DidDocument]] =
     Kleisli { case (client, uri) =>
-      val reqUri = (uri / "did-documents").withQueryParam("creator", pkId.show.replace("#", "%23"))
+      val reqUri = (uri / "did-documents").withQueryParam("creator", pkId.show)
       client.expect[List[DidDocument]](reqUri)
     }
 

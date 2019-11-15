@@ -116,7 +116,7 @@ object ops {
     proof <- getProof(j)
     sj = sanitizeJson(j)
     cry = Sha256WithRsaPss[F]
-    sig <- proof.signatureValue.value.base64Bytes
+    sig <- sanitizePemString(proof.signatureValue.value).base64Bytes
     jh <- cry.hash(sj.noSpaces.utf8Bytes)
     ph <- cry.hash(
       canonicalJson(
@@ -125,5 +125,8 @@ object ops {
     )
     v <- cry.verify(publicKey, ph ++ jh, sig)
   } yield v
+
+  def sanitizePemString(pemKey: String): String =
+    pemKey.replaceAll("-----((BEGIN)|(END))[A-Z\\s]+-----", "").replace("\n", "")
 
 }

@@ -16,7 +16,7 @@ object implicits {
   implicit val phoneDecoder: Decoder[Phone] = Decoder.decodeString.map(Phone)
   implicit val userAccountDecoder: Decoder[UserAccount] = Decoder.instance { c =>
     for {
-      id <- c.downField("accountId").as[AccountId]
+      id <- c.downField("id").as[AccountId]
       email <- c.downField("email").as[Email]
       name <- c.downField("name").as[Name]
       address <- c.downField("address").as[Address]

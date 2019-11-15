@@ -15,4 +15,6 @@ object types {
     errorDescription: String
   )
 
+  final case class InvalidSignature(message: String) extends NoStackTrace
+
 }
