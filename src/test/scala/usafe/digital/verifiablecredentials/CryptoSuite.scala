@@ -52,9 +52,6 @@ class CryptoSuite extends FunSpecLike with Matchers {
       val verified = for {
         ks <- ops.loadKeys[IO]
         (privK, pubK) = ks
-        _ <- IO.delay {
-          info(vc.asJson.spaces2)
-        }
         signed <- proof.signDocument[IO, VerifiableCredentials](vc, sproof, privK)
         _ <- IO.delay {
           info(signed.asJson.spaces2)
