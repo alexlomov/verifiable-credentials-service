@@ -62,7 +62,7 @@ object ops {
   ) (
     implicit proofEncoder: Encoder[SanitizedProof]
   ): F[SignatureValue] = {
-    val cry = Sha256WithRsaPss[F]
+    val cry = Sha256WithRsa[F]
     for {
       docHash <- cry.hash(
         canonicalJson(doc.asJson).noSpaces.utf8Bytes
@@ -115,7 +115,7 @@ object ops {
     )
     proof <- getProof(j)
     sj = sanitizeJson(j)
-    cry = Sha256WithRsaPss[F]
+    cry = Sha256WithRsa[F]
     sig <- sanitizePemString(proof.signatureValue.value).base64Bytes
     jh <- cry.hash(sj.noSpaces.utf8Bytes)
     ph <- cry.hash(

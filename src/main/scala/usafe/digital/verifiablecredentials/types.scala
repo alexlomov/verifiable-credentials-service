@@ -1,6 +1,6 @@
 package usafe.digital.verifiablecredentials
 
-import java.time.ZonedDateTime
+import java.time.Instant
 
 import cats.data.NonEmptyList
 import org.http4s.Uri
@@ -76,9 +76,9 @@ object types {
     name: String
   )
 
-  final case class IssuanceDate(value: ZonedDateTime)
+  final case class IssuanceDate(value: Instant)
 
-  final case class ExpirationDate(value: ZonedDateTime)
+  final case class ExpirationDate(value: Instant)
 
 
   //TODO: Nice, but later
