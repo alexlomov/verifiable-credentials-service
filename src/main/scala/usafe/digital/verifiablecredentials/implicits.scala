@@ -88,8 +88,8 @@ object implicits {
   implicit def decodeVerifiableCredentialsRequestEntity[F[_]: Sync]: EntityDecoder[F, VerifiableCredentialsRequest] =
     jsonOf
 
-  implicit val encodeExpirationDate: Encoder[ExpirationDate] = Encoder.encodeZonedDateTime.contramap { _.value }
-  implicit val encodeIssuanceDate: Encoder[IssuanceDate] = Encoder.encodeZonedDateTime.contramap { _.value }
+  implicit val encodeExpirationDate: Encoder[ExpirationDate] = Encoder.encodeInstant.contramap { _.value }
+  implicit val encodeIssuanceDate: Encoder[IssuanceDate] = Encoder.encodeInstant.contramap { _.value }
 
   implicit val encodeCredentialsIssuer: Encoder.AsObject[CredentialsIssuer] = Encoder.encodeJsonObject.contramapObject { ci =>
     JsonObject(
@@ -181,8 +181,8 @@ object implicits {
     } yield CredentialsIssuer(id, name)
   }
 
-  implicit val decodeIssuanceDate: Decoder[IssuanceDate] = Decoder.decodeZonedDateTime.map(IssuanceDate)
+  implicit val decodeIssuanceDate: Decoder[IssuanceDate] = Decoder.decodeZonedDateTime.map(v => IssuanceDate(v.toInstant))
 
-  implicit val decodeExpirationDate: Decoder[ExpirationDate] = Decoder.decodeZonedDateTime.map(ExpirationDate)
+  implicit val decodeExpirationDate: Decoder[ExpirationDate] = Decoder.decodeZonedDateTime.map(v => ExpirationDate(v.toInstant))
 
 }

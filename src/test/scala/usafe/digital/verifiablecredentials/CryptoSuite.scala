@@ -1,6 +1,6 @@
 package usafe.digital.verifiablecredentials
 
-import java.time.{ZoneId, ZonedDateTime}
+import java.time.{Instant, ZoneId, ZonedDateTime}
 
 import cats.data.NonEmptyList
 import cats.effect.IO
@@ -21,7 +21,7 @@ class CryptoSuite extends FunSpecLike with Matchers {
       import usafe.digital.proof.implicits._
       import usafe.digital.verifiablecredentials.implicits._
 
-      val created = ZonedDateTime.now
+      val created = Instant.now
       val vc = VerifiableCredentials(
         context = NonEmptyList.one(uri"https://w3id.org/did/v1"),
         id = VerifiableCredentialsId("the_most_unique_identifier"),
@@ -41,7 +41,7 @@ class CryptoSuite extends FunSpecLike with Matchers {
           name = "Evilware Inc."
         ),
         issuanceDate = IssuanceDate(created),
-        expirationDate = ExpirationDate(ZonedDateTime.of(2021, 12, 1, 0, 0, 59, 0, ZoneId.of("UTC"))).some,
+        expirationDate = ExpirationDate(ZonedDateTime.of(2021, 12, 1, 0, 0, 59, 0, ZoneId.of("UTC")).toInstant).some,
         none
       )
 

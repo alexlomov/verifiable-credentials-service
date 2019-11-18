@@ -1,7 +1,7 @@
 package usafe.digital.verifiablecredentials.endpoint
 
 import java.security.spec.PKCS8EncodedKeySpec
-import java.time.ZonedDateTime
+import java.time.Instant
 
 import cats.data.NonEmptyList
 import cats.effect.Sync
@@ -90,14 +90,14 @@ object http {
               )
             ),
             issuer = CredentialsIssuer(vcsDid, "Evilware"),
-            issuanceDate = IssuanceDate(ZonedDateTime.now),
+            issuanceDate = IssuanceDate(Instant.now),
             expirationDate = None,
             proof = None
           )
 
           vcProven <- proof.signDocument(
             vc,
-            SanitizedProof(vcsDid.copy(fragment = Fragment("key-1").some), ZonedDateTime.now),
+            SanitizedProof(vcsDid.copy(fragment = Fragment("key-1").some), Instant.now),
             privateKey
           )
           resp <- Created(vcProven)

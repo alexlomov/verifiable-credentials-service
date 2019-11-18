@@ -48,7 +48,7 @@ object implicits {
     for {
       tp <- c.downField("type").as[ProofSuiteType]
       creator <- c.downField("creator").as[Did]
-      created <- c.downField("created").as[ZonedDateTime]
+      created <- c.downField("created").as[ZonedDateTime].map(_.toInstant)
       sigVal <- c.downField("signatureValue").as[SignatureValue]
     } yield Proof(tp, creator, created, sigVal)
   }

@@ -2,7 +2,7 @@ import com.typesafe.sbt.packager.docker._
 
 name := "verifiable-credentials-service"
 
-version := "0.1.5"
+version := "0.1.7"
 
 scalaVersion := "2.13.1"
 

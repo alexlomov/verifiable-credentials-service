@@ -1,7 +1,7 @@
 package usafe.digital.proof
 
 import java.security.Security
-import java.time.ZonedDateTime
+import java.time.Instant
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import usafe.digital.did.types.Did
@@ -17,13 +17,13 @@ object types {
   final case class Proof(
     `type`: ProofSuiteType,
     creator: Did,
-    created: ZonedDateTime,
+    created: Instant,
     signatureValue: SignatureValue
   )
 
   final case class SanitizedProof(
     creator: Did,
-    created: ZonedDateTime
+    created: Instant
   )
 
   trait SecurityProviderEvidence {
